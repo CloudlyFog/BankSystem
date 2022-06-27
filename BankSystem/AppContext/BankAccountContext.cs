@@ -1,7 +1,7 @@
-using CabManagementSystem.Models;
+using BankSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace CabManagementSystem.AppContext
+namespace BankSystem.AppContext
 {
     public class BankAccountContext : DbContext
     {
@@ -68,7 +68,7 @@ namespace CabManagementSystem.AppContext
             };
             if (bankContext.CreateOperation(operation, OperationKind.Accrual) != ExceptionModel.Successfull)
                 return ExceptionModel.OperationFailed;
-            if (bankContext.BankAccrual(BankAccountModel, bankContext.Banks.FirstOrDefault(x => x.BankID == operation.BankID), operation) != ExceptionModel.Successfull)
+            if (bankContext.BankAccountAccrual(BankAccountModel, bankContext.Banks.FirstOrDefault(x => x.BankID == operation.BankID), operation) != ExceptionModel.Successfull)
                 return ExceptionModel.OperationFailed;
 
             return ExceptionModel.Successfull;
@@ -96,7 +96,7 @@ namespace CabManagementSystem.AppContext
             };
             if (bankContext.CreateOperation(operation, OperationKind.Withdraw) != ExceptionModel.Successfull)
                 return ExceptionModel.OperationFailed;
-            if (bankContext.BankWithdraw(bankAccountModel, bankContext.Banks.FirstOrDefault(x => x.BankID == operation.BankID), operation) != ExceptionModel.Successfull)
+            if (bankContext.BankAccountWithdraw(bankAccountModel, bankContext.Banks.FirstOrDefault(x => x.BankID == operation.BankID), operation) != ExceptionModel.Successfull)
                 return ExceptionModel.OperationFailed;
 
             return ExceptionModel.Successfull;
