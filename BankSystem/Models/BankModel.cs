@@ -1,4 +1,4 @@
-﻿namespace CabManagementSystem.Models
+﻿namespace BankSystem.Models
 {
     public class BankModel
     {
