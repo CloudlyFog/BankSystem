@@ -12,7 +12,6 @@ namespace BankSystem.Models
         public string Password { get; set; } = string.Empty;
         public bool Authenticated { get; set; }
         public bool Access { get; set; }
-        public bool HasOrder { get; set; }
         public Guid BankAccountID { get; set; } = Guid.NewGuid();
         public Guid BankID { get; set; } = new();
         public decimal BankAccountAmount { get; set; }
