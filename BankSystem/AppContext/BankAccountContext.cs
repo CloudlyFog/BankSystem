@@ -10,7 +10,7 @@ namespace BankSystem.AppContext
         {
             optionsBuilder.EnableSensitiveDataLogging();
             optionsBuilder.UseSqlServer(
-                @"Server=localhost\\SQLEXPRESS;Data Source=maxim;Initial Catalog=CabManagementSystem;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False");
+                @"Server=localhost\\SQLEXPRESS;Data Source=maxim;Initial Catalog=BankSystem;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False");
         }
 
         public DbSet<UserModel> Users { get; set; }

@@ -1,4 +1,6 @@
-﻿namespace BankSystem.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BankSystem.Models
 {
     public class BankModel
     {
@@ -24,6 +26,8 @@
         public Guid BankID { get; set; }
         public Guid UserBankAccountID { get; set; }
         public decimal CreditAmount { get; set; }
+
+        [NotMapped]
         public StatusOperationCode Operationstatus { get; set; } = StatusOperationCode.Successfull;
     }
 

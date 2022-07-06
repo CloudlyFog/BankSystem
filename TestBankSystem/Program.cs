@@ -16,10 +16,8 @@ namespace TestBankSystem
                 UserBankAccountID = bankAccount.UserBankAccountID,
                 CreditAmount = 200
             };
-            if (bankContext.RepayCredit(bankAccount, credit) != ExceptionModel.Successfull)
-                Console.WriteLine(ExceptionModel.OperationFailed);
-            else
-                Console.WriteLine(ExceptionModel.Successfull);
+            var add = bankContext.AddCredit(credit);
+            var remove = bankContext.RemoveCredit(credit);
         }
     }
 }
