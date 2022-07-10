@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# SQL Server Management Studio Solution File, Format Version 18.00
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{4F2E2C19-372F-40D8-9FA7-9D2138C6997A}") = "DataBankSystem", "DataBankSystem\DataBankSystem.ssmssqlproj", "{D43FC757-E197-4282-9F8E-13BD273CE9E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Default|Default = Default|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D43FC757-E197-4282-9F8E-13BD273CE9E4}.Default|Default.ActiveCfg = Default
+		{F52CE878-CEDE-491B-9CCD-0A28E85B2326}.Default|Default.ActiveCfg = Default
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {46300B80-B973-42A2-BF50-6ACF39CC6D9E}
+	EndGlobalSection
+EndGlobal

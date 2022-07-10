@@ -10,7 +10,7 @@ namespace BankSystem.AppContext
         {
             optionsBuilder.EnableSensitiveDataLogging();
             optionsBuilder.UseSqlServer(
-                @"Server=localhost\\SQLEXPRESS;Data Source=maxim;Initial Catalog=CabManagementSystem;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False");
+                @"Server=localhost\\SQLEXPRESS;Data Source=maxim;Initial Catalog=BankSystem;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False");
         }
 
         public DbSet<UserModel> Users { get; set; }
@@ -22,7 +22,7 @@ namespace BankSystem.AppContext
         /// </summary>
         /// <param name="bankAccountModel"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ExceptionModel AddBankAccount(BankAccountModel bankAccountModel)
+        public virtual ExceptionModel AddBankAccount(BankAccountModel bankAccountModel)
         {
             if (bankAccountModel is null)
                 return ExceptionModel.VariableIsNull;
@@ -37,7 +37,7 @@ namespace BankSystem.AppContext
         /// <param name="bankAccountModel"></param>
         /// <param name="user"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ExceptionModel UpdateBankAccount(BankAccountModel bankAccountModel, UserModel user)
+        public virtual ExceptionModel UpdateBankAccount(BankAccountModel bankAccountModel, UserModel user)
         {
             if (bankAccountModel is null)
                 return ExceptionModel.VariableIsNull;
@@ -53,7 +53,7 @@ namespace BankSystem.AppContext
         /// <param name="BankAccountModel"></param>
         /// <param name="amountAccrual"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public ExceptionModel Accrual(BankAccountModel BankAccountModel, decimal amountAccrual)
+        public virtual ExceptionModel Accrual(BankAccountModel BankAccountModel, decimal amountAccrual)
         {
             if (BankAccountModel is null || !Users.Any(x => x.ID == BankAccountModel.UserBankAccountID))
                 return ExceptionModel.VariableIsNull;
@@ -81,7 +81,7 @@ namespace BankSystem.AppContext
         /// <param name="amountWithdraw"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
-        public ExceptionModel Withdraw(BankAccountModel bankAccountModel, decimal amountWithdraw)
+        public virtual ExceptionModel Withdraw(BankAccountModel bankAccountModel, decimal amountWithdraw)
         {
             if (bankAccountModel is null || !Users.Any(x => x.ID == bankAccountModel.UserBankAccountID))
                 return ExceptionModel.VariableIsNull;

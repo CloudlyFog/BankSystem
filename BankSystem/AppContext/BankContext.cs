@@ -10,7 +10,7 @@ namespace BankSystem.AppContext
         {
             optionsBuilder.EnableSensitiveDataLogging();
             optionsBuilder.UseSqlServer(
-                @"Server=localhost\\SQLEXPRESS;Data Source=maxim;Initial Catalog=CabManagementSystem;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False");
+                @"Server=localhost\\SQLEXPRESS;Data Source=maxim;Initial Catalog=BankSystem;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False");
         }
 
         public DbSet<UserModel> Users { get; set; }
@@ -24,10 +24,12 @@ namespace BankSystem.AppContext
         /// </summary>
         /// <param name="operationModel"></param>
         /// <param name="operationKind"></param>
-        public ExceptionModel CreateOperation(OperationModel operationModel, OperationKind operationKind)
+        public virtual ExceptionModel CreateOperation(OperationModel operationModel, OperationKind operationKind)
         {
             if (operationModel is null)
                 return ExceptionModel.VariableIsNull;
+            if (Operations.Any(x => x.ID == operationModel.ID))
+                return ExceptionModel.OperationFailed;
             operationModel.OperationStatus = StatusOperation(operationModel, operationKind);
             Operations.Add(operationModel);
             SaveChanges();
@@ -57,7 +59,7 @@ namespace BankSystem.AppContext
         /// <param name="bankModel"></param>
         /// <param name="operationModel"></param>
         /// <exception cref="Exception"></exception>
-        public ExceptionModel BankAccountAccrual(BankAccountModel bankAccountModel, BankModel bankModel, OperationModel operationModel)
+        public virtual ExceptionModel BankAccountAccrual(BankAccountModel bankAccountModel, BankModel bankModel, OperationModel operationModel)
         {
             if (bankAccountModel is null)
                 return ExceptionModel.VariableIsNull;
@@ -89,7 +91,7 @@ namespace BankSystem.AppContext
         /// <param name="bankModel"></param>
         /// <param name="operationModel"></param>
         /// <exception cref="Exception"></exception>
-        public ExceptionModel BankAccountAccrual(BankModel bankModel, OperationModel operationModel)
+        public virtual ExceptionModel BankAccountAccrual(BankModel bankModel, OperationModel operationModel)
         {
             if (bankModel is null)
                 return ExceptionModel.VariableIsNull;
@@ -111,7 +113,7 @@ namespace BankSystem.AppContext
         /// <param name="bankModel"></param>
         /// <param name="operationModel"></param>
         /// <exception cref="Exception"></exception>
-        public ExceptionModel BankAccountWithdraw(BankAccountModel bankAccountModel, BankModel bankModel, OperationModel operationModel)
+        public virtual ExceptionModel BankAccountWithdraw(BankAccountModel bankAccountModel, BankModel bankModel, OperationModel operationModel)
         {
             if (bankAccountModel is null)
                 return ExceptionModel.VariableIsNull;
@@ -143,7 +145,7 @@ namespace BankSystem.AppContext
         /// <param name="bankModel"></param>
         /// <param name="operationModel"></param>
         /// <exception cref="Exception"></exception>
-        public ExceptionModel BankAccountWithdraw(BankModel bankModel, OperationModel operationModel)
+        public virtual ExceptionModel BankAccountWithdraw(BankModel bankModel, OperationModel operationModel)
         {
             if (bankModel is null)
                 return ExceptionModel.VariableIsNull;
@@ -165,7 +167,7 @@ namespace BankSystem.AppContext
         /// <param name="bankAccountModel"></param>
         /// <param name="creditModel"></param>
         /// <returns></returns>
-        public ExceptionModel TakeCredit(BankAccountModel bankAccountModel, CreditModel creditModel)
+        public virtual ExceptionModel TakeCredit(BankAccountModel bankAccountModel, CreditModel creditModel)
         {
             if (bankAccountModel is null || creditModel is null)
                 return ExceptionModel.VariableIsNull;
@@ -187,6 +189,8 @@ namespace BankSystem.AppContext
             if (BankAccountWithdraw(Banks.FirstOrDefault(x => x.BankID == bankAccountModel.BankID), operationAccrualOnUserAccount) != ExceptionModel.Successfull)
                 return (ExceptionModel)operationAccrualOnUserAccount.OperationStatus.GetHashCode();
 
+            if (AddCredit(creditModel) != ExceptionModel.Successfull)
+                return (ExceptionModel)operationAccrualOnUserAccount.OperationStatus.GetHashCode();
 
             return ExceptionModel.Successfull;
         }
@@ -198,7 +202,7 @@ namespace BankSystem.AppContext
         /// <param name="bankAccountModel"></param>
         /// <param name="creditModel"></param>
         /// <returns></returns>
-        public ExceptionModel RepayCredit(BankAccountModel bankAccountModel, CreditModel creditModel)
+        public virtual ExceptionModel RepayCredit(BankAccountModel bankAccountModel, CreditModel creditModel)
         {
             if (bankAccountModel is null || creditModel is null)
                 return ExceptionModel.VariableIsNull;
@@ -220,6 +224,31 @@ namespace BankSystem.AppContext
             if (BankAccountWithdraw(Banks.FirstOrDefault(x => x.BankID == bankAccountModel.BankID), operationAccrualOnUserAccount) != ExceptionModel.Successfull)
                 return (ExceptionModel)operationAccrualOnUserAccount.OperationStatus.GetHashCode();
 
+            if (RemoveCredit(creditModel) != ExceptionModel.Successfull)
+                return (ExceptionModel)operationAccrualOnUserAccount.OperationStatus.GetHashCode();
+
+            return ExceptionModel.Successfull;
+        }
+
+        public virtual ExceptionModel AddCredit(CreditModel creditModel)
+        {
+            if (creditModel is null)
+                return ExceptionModel.VariableIsNull;
+            if (Credits.Any(x => x.Equals(creditModel)))
+                return ExceptionModel.OperationFailed;
+            Credits.Add(creditModel);
+            SaveChanges();
+            return ExceptionModel.Successfull;
+        }
+
+        public virtual ExceptionModel RemoveCredit(CreditModel creditModel)
+        {
+            if (creditModel is null)
+                return ExceptionModel.VariableIsNull;
+            if (!Credits.Any(x => x.ID == creditModel.ID))
+                return ExceptionModel.OperationFailed;
+            Credits.Remove(creditModel);
+            SaveChanges();
             return ExceptionModel.Successfull;
         }
 
