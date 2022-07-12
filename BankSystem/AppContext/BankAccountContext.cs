@@ -5,7 +5,7 @@ namespace BankSystem.AppContext
 {
     public class BankAccountContext : DbContext
     {
-        public BankAccountContext(DbContextOptions<BankAccountContext> options) : base(options) => Database.EnsureCreated();
+        public BankAccountContext() => Database.EnsureCreated();
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();
@@ -15,7 +15,7 @@ namespace BankSystem.AppContext
 
         public DbSet<UserModel> Users { get; set; }
         public DbSet<BankAccountModel> BankAccounts { get; set; }
-        private readonly BankContext bankContext = new(new DbContextOptions<BankContext>());
+        private readonly BankContext bankContext = new();
 
         /// <summary>
         /// adds bank account of user

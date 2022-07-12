@@ -5,7 +5,7 @@ namespace BankSystem.AppContext
 {
     public class BankContext : DbContext
     {
-        public BankContext(DbContextOptions<BankContext> options) : base(options) => Database.EnsureCreated();
+        public BankContext() => Database.EnsureCreated();
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();
