@@ -21,7 +21,7 @@ namespace BankSystem.AppContext
         /// adds bank account of user
         /// </summary>
         /// <param name="bankAccountModel"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns>object of <see cref="ExceptionModel"/></returns>
         public virtual ExceptionModel AddBankAccount(BankAccountModel bankAccountModel)
         {
             if (bankAccountModel is null)
@@ -32,11 +32,25 @@ namespace BankSystem.AppContext
         }
 
         /// <summary>
+        /// removes bank account of user from database
+        /// </summary>
+        /// <param name="bankAccountModel"></param>
+        /// <returns>object of <see cref="ExceptionModel"/></returns>
+        public virtual ExceptionModel RemoveBankAccount(BankAccountModel bankAccountModel)
+        {
+            if (bankAccountModel is null)
+                return ExceptionModel.VariableIsNull;
+            BankAccounts.Remove(bankAccountModel);
+            SaveChanges();
+            return ExceptionModel.Successfull;
+        }
+
+        /// <summary>
         /// updates bank account of user
         /// </summary>
         /// <param name="bankAccountModel"></param>
         /// <param name="user"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns>object of <see cref="ExceptionModel"/></returns>
         public virtual ExceptionModel UpdateBankAccount(BankAccountModel bankAccountModel, UserModel user)
         {
             if (bankAccountModel is null)
@@ -52,7 +66,7 @@ namespace BankSystem.AppContext
         /// </summary>
         /// <param name="BankAccountModel"></param>
         /// <param name="amountAccrual"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns>object of <see cref="ExceptionModel"/></returns>
         public virtual ExceptionModel Accrual(BankAccountModel BankAccountModel, decimal amountAccrual)
         {
             if (BankAccountModel is null || !Users.Any(x => x.ID == BankAccountModel.UserBankAccountID))
@@ -79,8 +93,7 @@ namespace BankSystem.AppContext
         /// </summary>
         /// <param name="bankAccountModel"></param>
         /// <param name="amountWithdraw"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException"></exception>
+        /// <returns>object of <see cref="ExceptionModel"/></returns>
         public virtual ExceptionModel Withdraw(BankAccountModel bankAccountModel, decimal amountWithdraw)
         {
             if (bankAccountModel is null || !Users.Any(x => x.ID == bankAccountModel.UserBankAccountID))
