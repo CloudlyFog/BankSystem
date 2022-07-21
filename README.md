@@ -28,5 +28,5 @@ Always change connection string either directly in context class (**You are resp
 
 ## Conclusion
 
-Dowloading and next using this package is your respoinsible and only you decide use it or not. All exceptions and crashes of your projects is responsible on you. We was tested our product in many tests and have a conclusion in which says that all methods and logic of project are working correctly. So, we wish you luck.
+Dowloading and next using this package is your respoinsible and only you decide use it or not. All exceptions and crashes of your projects is responsible on you. We was tested our product in many tests and have a conclusion in which says that all methods and logic of project are working correctly. So, we wish you luck.<br>
 **Sincerely, CloudlyFog.**
