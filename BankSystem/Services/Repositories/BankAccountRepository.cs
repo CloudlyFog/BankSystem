@@ -13,8 +13,8 @@ namespace BankSystem.Services.Repositories
         private const string queryConnection = @"Server=localhost\\SQLEXPRESS;Data Source=maxim;Initial Catalog=BankSystem;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=False";
         public BankAccountRepository()
         {
-            bankAccountContext = new BankAccountContext(queryConnection);
-            bankContext = new BankContext(queryConnection);
+            bankAccountContext = new BankAccountContext();
+            bankContext = new BankContext();
             bankRepository = new BankRepository();
         }
         public BankAccountRepository(string connection)

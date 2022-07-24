@@ -1,4 +1,4 @@
-﻿using BankSystem.Models;
+using BankSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankSystem.AppContext
