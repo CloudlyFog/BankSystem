@@ -9,6 +9,7 @@
     <Authors>CloudlyFog</Authors>
     <RepositoryUrl>https://github.com/CloudlyFog/BankSystem</RepositoryUrl>
     <PackAsTool>False</PackAsTool>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

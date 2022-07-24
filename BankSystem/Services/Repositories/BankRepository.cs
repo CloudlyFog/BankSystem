@@ -20,7 +20,6 @@ namespace BankSystem.Services.Repositories
             bankContext = new BankContext(connection);
         }
 
-
         /// <summary>
         /// accrual money on account with the same user id
         /// </summary>
