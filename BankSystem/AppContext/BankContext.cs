@@ -1,4 +1,6 @@
 ﻿using BankSystem.Models;
+using BankSystem.Services.Interfaces;
+using BankSystem.Services.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankSystem.AppContext
@@ -46,7 +48,7 @@ namespace BankSystem.AppContext
         /// </summary>
         /// <param name="operationModel"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        private ExceptionModel DeleteOperation(OperationModel operationModel)
+        public ExceptionModel DeleteOperation(OperationModel operationModel)
         {
             if (operationModel is null)
                 return ExceptionModel.VariableIsNull;
@@ -54,6 +56,114 @@ namespace BankSystem.AppContext
                 return ExceptionModel.OperationNotExist;
             Operations.Remove(operationModel);
             SaveChanges();
+            return ExceptionModel.Successfull;
+        }
+
+        /// <summary>
+        /// accrual money to user bank account from bank's account
+        /// </summary>
+        /// <param name="bankAccountModel"></param>
+        /// <param name="bankModel"></param>
+        /// <param name="operationModel"></param>
+        /// <exception cref="Exception"></exception>
+        public virtual ExceptionModel BankAccountAccrual(BankAccountModel bankAccountModel, BankModel bankModel, OperationModel operationModel)
+        {
+            if (bankAccountModel is null)
+                return ExceptionModel.VariableIsNull;
+            if (bankModel is null)
+                return ExceptionModel.VariableIsNull;
+            if (operationModel.OperationStatus != StatusOperationCode.Successfull)
+                return (ExceptionModel)operationModel.OperationStatus.GetHashCode();
+
+            var user = Users.FirstOrDefault(x => x.ID == bankAccountModel.UserBankAccountID);
+            if (user is null)
+                return ExceptionModel.VariableIsNull;
+
+            bankModel.AccountAmount -= operationModel.TransferAmount;
+            bankAccountModel.BankAccountAmount += operationModel.TransferAmount;
+            user.BankAccountAmount = bankAccountModel.BankAccountAmount;
+            ChangeTracker.Clear();
+            BankAccounts.Update(bankAccountModel);
+            Banks.Update(bankModel);
+            Users.Update(user);
+            SaveChanges();
+            DeleteOperation(operationModel);
+            return ExceptionModel.Successfull;
+        }
+
+        /// <summary>
+        /// accrual money to bank's account
+        /// </summary>
+        /// <param name="bankAccountModel"></param>
+        /// <param name="bankModel"></param>
+        /// <param name="operationModel"></param>
+        /// <exception cref="Exception"></exception>
+        public virtual ExceptionModel BankAccountAccrual(BankModel bankModel, OperationModel operationModel)
+        {
+            if (bankModel is null)
+                return ExceptionModel.VariableIsNull;
+            if (operationModel.OperationStatus != StatusOperationCode.Successfull)
+                return (ExceptionModel)operationModel.OperationStatus.GetHashCode();
+
+            bankModel.AccountAmount += operationModel.TransferAmount;
+            ChangeTracker.Clear();
+            Banks.Update(bankModel);
+            SaveChanges();
+            DeleteOperation(operationModel);
+            return ExceptionModel.Successfull;
+        }
+
+        /// <summary>
+        /// withdraw money from user bank account and accrual to bank's account
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="bankModel"></param>
+        /// <param name="operationModel"></param>
+        /// <exception cref="Exception"></exception>
+        public virtual ExceptionModel BankAccountWithdraw(BankAccountModel bankAccountModel, BankModel bankModel, OperationModel operationModel)
+        {
+            if (bankAccountModel is null)
+                return ExceptionModel.VariableIsNull;
+            if (bankModel is null)
+                return ExceptionModel.VariableIsNull;
+            if (operationModel.OperationStatus != StatusOperationCode.Successfull)
+                return (ExceptionModel)operationModel.OperationStatus.GetHashCode();
+
+            var user = Users.FirstOrDefault(x => x.ID == bankAccountModel.UserBankAccountID);
+            if (user is null)
+                return ExceptionModel.VariableIsNull;
+
+            bankModel.AccountAmount += operationModel.TransferAmount;
+            bankAccountModel.BankAccountAmount -= operationModel.TransferAmount;
+            user.BankAccountAmount = bankAccountModel.BankAccountAmount;
+            ChangeTracker.Clear();
+            BankAccounts.Update(bankAccountModel);
+            Banks.Update(bankModel);
+            Users.Update(user);
+            SaveChanges();
+            DeleteOperation(operationModel);
+            return ExceptionModel.Successfull;
+        }
+
+        /// <summary>
+        /// withdraw money from bank's account
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="bankModel"></param>
+        /// <param name="operationModel"></param>
+        /// <exception cref="Exception"></exception>
+        public virtual ExceptionModel BankAccountWithdraw(BankModel bankModel, OperationModel operationModel)
+        {
+            if (bankModel is null)
+                return ExceptionModel.VariableIsNull;
+            if (operationModel.OperationStatus != StatusOperationCode.Successfull)
+                return (ExceptionModel)operationModel.OperationStatus.GetHashCode();
+
+            bankModel.AccountAmount -= operationModel.TransferAmount;
+            ChangeTracker.Clear();
+            Banks.Update(bankModel);
+            SaveChanges();
+            DeleteOperation(operationModel);
             return ExceptionModel.Successfull;
         }
 
@@ -80,10 +190,10 @@ namespace BankSystem.AppContext
             if (CreateOperation(operationAccrualOnUserAccount, OperationKind.Accrual) != ExceptionModel.Successfull) // here creates operation for accrualing money on user bank account
                 return (ExceptionModel)operationAccrualOnUserAccount.OperationStatus.GetHashCode();
 
-            if (BankAccountAccrual(bankAccountModel, Banks.FirstOrDefault(x => x.BankID == bankAccountModel.BankID), operationAccrualOnUserAccount) != ExceptionModel.Successfull)
+            if (bankRepository.BankAccountAccrual(bankAccountModel, Banks.FirstOrDefault(x => x.BankID == bankAccountModel.BankID), operationAccrualOnUserAccount) != ExceptionModel.Successfull)
                 return (ExceptionModel)operationAccrualOnUserAccount.OperationStatus.GetHashCode();
 
-            if (BankAccountWithdraw(Banks.FirstOrDefault(x => x.BankID == bankAccountModel.BankID), operationAccrualOnUserAccount) != ExceptionModel.Successfull)
+            if (BankAccountWithdraw(bankRepository.Get(x => x.BankID == bankAccountModel.BankID), operationAccrualOnUserAccount) != ExceptionModel.Successfull)
                 return (ExceptionModel)operationAccrualOnUserAccount.OperationStatus.GetHashCode();
 
             if (AddCredit(creditModel) != ExceptionModel.Successfull)
@@ -115,10 +225,10 @@ namespace BankSystem.AppContext
             if (CreateOperation(operationAccrualOnUserAccount, OperationKind.Accrual) != ExceptionModel.Successfull) // here creates operation for accrualing money on user bank account
                 return (ExceptionModel)operationAccrualOnUserAccount.OperationStatus.GetHashCode();
 
-            if (BankAccountWithdraw(bankAccountModel, Banks.FirstOrDefault(x => x.BankID == bankAccountModel.BankID), operationAccrualOnUserAccount) != ExceptionModel.Successfull)
+            if (bankRepository.BankAccountWithdraw(bankAccountModel, bankRepository.Get(x => x.BankID == bankAccountModel.BankID), operationAccrualOnUserAccount) != ExceptionModel.Successfull)
                 return (ExceptionModel)operationAccrualOnUserAccount.OperationStatus.GetHashCode();
 
-            if (BankAccountWithdraw(Banks.FirstOrDefault(x => x.BankID == bankAccountModel.BankID), operationAccrualOnUserAccount) != ExceptionModel.Successfull)
+            if (BankAccountWithdraw(bankRepository.Get(x => x.BankID == bankAccountModel.BankID), operationAccrualOnUserAccount) != ExceptionModel.Successfull)
                 return (ExceptionModel)operationAccrualOnUserAccount.OperationStatus.GetHashCode();
 
             if (RemoveCredit(creditModel) != ExceptionModel.Successfull)
@@ -209,7 +319,7 @@ namespace BankSystem.AppContext
             return ExceptionModel.Successfull;
         }
 
-        private ExceptionModel AddCredit(CreditModel creditModel)
+        public virtual ExceptionModel AddCredit(CreditModel creditModel)
         {
             if (creditModel is null)
                 return ExceptionModel.VariableIsNull;
@@ -220,7 +330,7 @@ namespace BankSystem.AppContext
             return ExceptionModel.Successfull;
         }
 
-        public virtual ExceptionModel RemoveCredit(CreditModel creditModel)
+        private ExceptionModel RemoveCredit(CreditModel creditModel)
         {
             if (creditModel is null)
                 return ExceptionModel.VariableIsNull;
